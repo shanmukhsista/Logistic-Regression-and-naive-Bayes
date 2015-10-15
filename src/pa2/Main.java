@@ -19,13 +19,17 @@ public class Main {
         String depths = p.GetPropertyValue("TreeDepths");
 
         try{
-            for (String dp : depths.split(",")){
+            int[] classesToTest = { 2};
+            for (int dp:classesToTest){
                 //Parse Tree Depths to run for each depth.
                 //Read csv file and serialize input data.
                 System.out.println("Reading Input Training Data from " + trainFileName);
                 Data d = Utility.ParseCategoricalFeatureData(categoricalDataString, trainFileName);
-                Data updatedData = Utility.readTrainingFile(classLabelIndex, trainFileName, d);   //read data
-                System.out.println("Data load Complete.");
+                Data updatedData = Utility.readTrainingFile(classLabelIndex, trainFileName, d , dp);
+                //Use this updatedData Object to train and test Logistic Regression.
+
+
+                updatedData.PrintData("train");//read data
                 //Apply Logistic Regression and Naive Bayes.
 
             }

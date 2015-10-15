@@ -12,7 +12,7 @@ import java.util.Set;
 
 public class Utility {
 	public static HashMap<Integer, Integer> lastValues = new HashMap<>(); 
-	 public static Data readTrainingFile(int classLabelColumn, String inputFileName , Data trainingData) throws Exception{
+	 public static Data readTrainingFile(int classLabelColumn, String inputFileName , Data trainingData, int currentClass) throws Exception{
 		try{
 			
 			 FileReader fr = new FileReader(inputFileName);
@@ -32,7 +32,10 @@ public class Utility {
 						 Attribute a = new Attribute();
 						 a.setValue(Integer.parseInt(t));
 						 if ( columnIndex== classLabelColumn){
-							 //This is the class label attribute. 
+							 //This is the class label attribute.
+							 if ( a.getValue() != currentClass){
+								 a.setValue(0);
+							 }
 							 newRow.setClassLabel(a);
 							 classLabelSet.add(Integer.toString(a.getValue()));
 						 }
@@ -79,7 +82,7 @@ public class Utility {
 	}
 	 //Read testing data. Testing data is present inside the data object. TrainingData. WE have already
 	 //trained our data. This testing 
-	 public static Data readTestData(int classLabelColumn, String inputFileName , Data trainingData){
+	 public static Data readTestData(int classLabelColumn, String inputFileName , Data trainingData, int currentClass){
 		 try{
 			
 			 	FileReader fr = new FileReader(inputFileName);
@@ -96,7 +99,10 @@ public class Utility {
 						 Attribute a = new Attribute();
 						 a.setValue(Integer.parseInt(t));
 						 if ( columnIndex== classLabelColumn){
-							 //This is the class label attribute. 
+							 //This is the class label attribute.
+							 if ( a.getValue() != currentClass){
+								 a.setValue(0);
+							 }
 							 newRow.setExpectedClassLabel(Integer.toString(a.getValue()));
 						 }
 						 else{				 
