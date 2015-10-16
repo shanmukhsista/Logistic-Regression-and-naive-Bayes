@@ -27,9 +27,9 @@ public class Main {
                 Data d = Utility.ParseCategoricalFeatureData(categoricalDataString, trainFileName);
                 Data updatedData = Utility.readTrainingFile(classLabelIndex, trainFileName, d , dp);
                 //Use this updatedData Object to train and test Logistic Regression.
-
-
                 updatedData.PrintData("train");//read data
+                LogisticRegression lr = new LogisticRegression(updatedData);
+                lr.TrainClassifier();
                 //Apply Logistic Regression and Naive Bayes.
 
             }

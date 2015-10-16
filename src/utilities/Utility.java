@@ -36,6 +36,9 @@ public class Utility {
 							 if ( a.getValue() != currentClass){
 								 a.setValue(0);
 							 }
+							 else{
+								 a.setValue(1);
+							 }
 							 newRow.setClassLabel(a);
 							 classLabelSet.add(Integer.toString(a.getValue()));
 						 }
@@ -102,6 +105,9 @@ public class Utility {
 							 //This is the class label attribute.
 							 if ( a.getValue() != currentClass){
 								 a.setValue(0);
+							 }
+							 else{
+								 a.setValue(1);
 							 }
 							 newRow.setExpectedClassLabel(Integer.toString(a.getValue()));
 						 }
