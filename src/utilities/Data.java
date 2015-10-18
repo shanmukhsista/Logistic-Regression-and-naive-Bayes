@@ -130,4 +130,7 @@ public class Data {
 			}
 		}
 	}
+	public void PrintClassWisePredictions(){
+		System.out.println(this.classwisePredictions);
+	}
 }

@@ -14,15 +14,15 @@ public class LogisticRegression {
     Data d  = null;
     double[] gradientVector = null;
     double[] weightVector = null;
-    double learningRate = 1;
+    double learningRate = .000001;
     public LogisticRegression(Data trainData){
         this.d = trainData;
-        gradientVector = new double[trainData.getAttributeCount()];
         weightVector = new double[trainData.getAttributeCount()];
     }
     public void TrainClassifier(){
         //For each row, compute the probability
-        for ( int k = 0 ; k < 1 ;k++){
+        for ( int k = 0 ; k < 5000 ;k++){
+            gradientVector = new double[d.getAttributeCount()];
             for (int rowId : d.getTrainingRows().keySet()){
                 FeatureRow row = d.getTrainingRows().get(rowId);
                 if ( row != null){
@@ -48,6 +48,27 @@ public class LogisticRegression {
         }
         this.PrintDoubleArray(weightVector);
     }
+    public void TestClassifier(Data testData) {
+
+        for (int rowId : testData.getTestRows().keySet()) {
+            double result = 0.0;
+            FeatureRow row = d.getTestRows().get(rowId);
+            if (row != null) {
+                //update the weight vector using the learning rate .
+                for ( int i =0 ; i < weightVector.length ; i++){
+                   result = result +  (weightVector[i]* row.getFeatures().get(i).getValue());
+                }
+            }
+            if ( result  < 0){
+                row.setPredictedClassLabel("0");
+            }
+            else{
+                row.setPredictedClassLabel("1");
+            }
+            System.out.println("Expected " + row.getExpectedClassLabel() + " - Predicted : " + row.getPredictedClassLabel());
+        }
+        System.out.println(this.ComputePredictionAccuracy());
+    }
     public void PrintDoubleArray(double[] a ){
         for ( int i = 0 ; i < a.length ; i++){
             System.out.print(a[i] + "   ");
@@ -56,9 +77,21 @@ public class LogisticRegression {
     }
     public double ComputeProbability(double z){
         double probability ;
-        System.out.println("Computing probability for " + z);
-        probability = 1.0/(1.0 + Math.exp(z));
-        System.out.println("prob is "+ probability);
+        probability = 1.0/(1.0 + Math.exp(-1*z));
         return probability;
+    }
+    public double ComputePredictionAccuracy(){
+        double res = 0.0 ;
+        int nCount = 0 ;
+        int dCount= 0;
+        for( int rowId : this.d.getTestRows().keySet()){
+            FeatureRow row = this.d.getTestRows().get(rowId);
+            if ( row.getExpectedClassLabel().equals(row.getPredictedClassLabel())){
+                nCount++;
+            }
+            dCount++;
+        }
+        res = ( 100.0 * nCount )/ (1.0* dCount);
+        return res;
     }
 }

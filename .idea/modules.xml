@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PA2-Machine Learning.iml" filepath="$PROJECT_DIR$/PA2-Machine Learning.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Logistic-Regression-and-naive-Bayes.iml" filepath="$PROJECT_DIR$/Logistic-Regression-and-naive-Bayes.iml" />
     </modules>
   </component>
 </project>

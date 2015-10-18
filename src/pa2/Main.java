@@ -19,9 +19,9 @@ public class Main {
         String depths = p.GetPropertyValue("TreeDepths");
 
         try{
-            int[] classesToTest = { 2};
+            int[] classesToTest = { 1};
             for (int dp:classesToTest){
-                //Parse Tree Depths to run for each depth.
+               //Parse Tree Depths to run for each depth.
                 //Read csv file and serialize input data.
                 System.out.println("Reading Input Training Data from " + trainFileName);
                 Data d = Utility.ParseCategoricalFeatureData(categoricalDataString, trainFileName);
@@ -30,7 +30,10 @@ public class Main {
                 updatedData.PrintData("train");//read data
                 LogisticRegression lr = new LogisticRegression(updatedData);
                 lr.TrainClassifier();
+                updatedData = Utility.readTestData(classLabelIndex, testFileName , d, dp);
+                updatedData.PrintData("test");
                 //Apply Logistic Regression and Naive Bayes.
+                lr.TestClassifier(updatedData);
 
             }
 

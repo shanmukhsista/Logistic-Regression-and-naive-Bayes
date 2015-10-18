@@ -162,6 +162,9 @@ public class Utility {
 		
 		 return trainingData; 
 	 }
+	public Data CreateBinarySplits(Data inputData){
+		return inputData;
+	}
 	 public void CreateNewFile(String fileName){
 			try {
 	    		 
