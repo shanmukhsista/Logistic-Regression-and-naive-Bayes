@@ -19,7 +19,7 @@ public class Main {
         String depths = p.GetPropertyValue("TreeDepths");
 
         try{
-            int[] classesToTest = { 1,2,3};
+            int[] classesToTest = { 1};
             for (int dp:classesToTest){
                //Parse Tree Depths to run for each depth.
                 //Read csv file and serialize input data.
@@ -30,12 +30,20 @@ public class Main {
                 updatedData = Utility.readTestData(classLabelIndex, testFileName , d, dp);
                 //updatedData.PrintData("test");
                 //Apply Logistic Regression and Naive Bayes.
-                updatedData.PrintData("train");
+               //Naive bayes has to be run first because we are transforming the train adn test data for logistic regression.
+                NaiveBayes nb = new NaiveBayes(updatedData);
+                //train naive bayes classifier .
+                nb.trainClassifier(updatedData);
+                //Read test data.
+                updatedData = Utility.readTestData(classLabelIndex, testFileName , d, dp);
+                //test naive bayes classifier.
+                nb.testClassifier(updatedData);
+                //Create feature vectors for logistic regression training data.
                 updatedData.CreateBinarySplitsForColumnsInData();
-                updatedData.PrintData("train");
-
-               LogisticRegression lr = new LogisticRegression(updatedData);
-               lr.TrainClassifier();
+                //train logistic regression.
+                LogisticRegression lr = new LogisticRegression(updatedData);
+                lr.TrainClassifier();
+                //test logistic regression classifier.
                 lr.TestClassifier(updatedData);
             }
 

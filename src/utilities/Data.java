@@ -246,6 +246,12 @@ public class Data {
 			}
 		}
 	}
+	public void PrintConfusionMatrix(){
+		if ( trainingRows != null && testRows != null){
+			//Print confusion matrix. 
+		}
+	}
+
 	public void PrintClassWisePredictions(){
 		System.out.println(this.classwisePredictions);
 	}

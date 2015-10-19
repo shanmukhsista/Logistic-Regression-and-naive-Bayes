@@ -1,5 +1,6 @@
 package pa2;
 
+import com.javafx.tools.doclets.formats.html.SourceToHTMLConverter;
 import com.sun.org.apache.xalan.internal.utils.FeatureManager;
 import utilities.Attribute;
 import utilities.Data;
@@ -14,17 +15,18 @@ public class LogisticRegression {
     Data d  = null;
     double[] gradientVector = null;
     double[] weightVector = null;
-    double learningRate = .5;
+    double learningRate = .13;
     public LogisticRegression(Data trainData){
         this.d = trainData;
         weightVector = new double[trainData.getAttributeCount()];
     }
     public void TrainClassifier(){
+        System.out.println("\n*************Started training Logistic Regression.*****************");
         //For each row, compute the probability
         double[] prevWeightVector = new double[weightVector.length];
         int c = 0 ;
         do {
-            System.out.println("Iteration : " + c++);
+            c++;
             gradientVector = new double[weightVector.length];
             for (int rowId : d.getTrainingRows().keySet()) {
                 FeatureRow row = d.getTrainingRows().get(rowId);
@@ -52,6 +54,9 @@ public class LogisticRegression {
                 }
             }
         } while(!CheckForConvergence(weightVector, prevWeightVector));
+        System.out.println("Learning Rate : "+ learningRate);
+        System.out.println("Number of Iterations till convergence : " + c );
+        System.out.println("Final Weight Vector is: ");
         this.PrintDoubleArray(weightVector);
     }
 
@@ -67,7 +72,7 @@ public class LogisticRegression {
     }
 
     public void TestClassifier(Data testData) {
-
+        System.out.println("\nTesting Logistic Regression Classifier.");
         for (int rowId : testData.getTestRows().keySet()) {
             double result = 0.0;
             FeatureRow row = d.getTestRows().get(rowId);
@@ -85,7 +90,8 @@ public class LogisticRegression {
             }
             //System.out.println("Expected " + row.getExpectedClassLabel() + " - Predicted : " + row.getPredictedClassLabel());
         }
-        System.out.println(this.ComputePredictionAccuracy());
+        System.out.println("Done Testing. Classifier Accuracy - " + this.ComputePredictionAccuracy());
+        System.out.println("***************************************");
     }
     public void PrintDoubleArray(double[] a ){
         for ( int i = 0 ; i < a.length ; i++){
