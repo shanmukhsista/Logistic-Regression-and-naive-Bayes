@@ -1,8 +1,5 @@
 package utilities;
-import java.util.HashSet;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Set;
+import java.util.*;
 
 
 public class Data {
@@ -105,8 +102,127 @@ public class Data {
 			this.testRows.put(lastInsertedTestRow++, r); 
 		}
 	}
-	
+	public void CreateBinarySplitsForColumnsInData(){
+		//This method scans the train and test data for distinct values and builds a multi column binary split
+		HashMap<Integer , HashSet<Integer>> values = new HashMap<>();
+		//Scan training data.
+		for ( int rowId  : trainingRows.keySet()){
+			FeatureRow row = trainingRows.get(rowId) ;
+			List<Attribute> cols = row.getFeatures();
+			for ( int col = 0 ; col < cols.size(); col++){
+				if ( values.containsKey(col)){
+					HashSet<Integer> storedSet = values.get(col);
+					if ( storedSet != null){
+						storedSet.add(cols.get(col).getValue());
+					}
+					values.put(col, storedSet);
+				}
+				else{
+					HashSet<Integer> attrValues = new HashSet<>();
+					attrValues.add(cols.get(col).getValue());
+					values.put(col, attrValues);
+ 				}
+			}
+		}
+		for ( int rowId  : testRows.keySet()){
+			FeatureRow row = testRows.get(rowId) ;
+			List<Attribute> cols = row.getFeatures();
+			for ( int col = 0 ; col < cols.size(); col++){
+				if ( values.containsKey(col)){
+					HashSet<Integer> storedSet = values.get(col);
+					if ( storedSet != null){
+						storedSet.add(cols.get(col).getValue());
+					}
+					values.put(col, storedSet);
+				}
+				else{
+					HashSet<Integer> attrValues = new HashSet<>();
+					attrValues.add(cols.get(col).getValue());
+					values.put(col, attrValues);
+				}
+			}
+		}
+		int insertions = 0;
+		//Add these columns to tthe train and test set.
+		for ( int rowId  : trainingRows.keySet()){
+			FeatureRow row = trainingRows.get(rowId) ;
+			List<Attribute> cols = row.getFeatures();
+			//Create a temp map storing values for splits as categorical values
+			List<Attribute> newCols = new ArrayList<>();
+			for ( int c = 0 ; c < cols.size(); c++){
+				//Check if this col's value is = 0 or
+				if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
+					//We don't need to do anything here. The column is binary valued.
+					newCols.add(cols.get(c));
+				}
+				else{
+					TreeMap<Integer, Integer> aCol = new TreeMap<>();
+					int tempIndex = c ;
+					for ( int c1  : values.get(c)){
+						//aCol -- key - new column index.
+						//value - new column value.
+						aCol.put(c1, 0);
+					}
+					if( aCol.containsKey(cols.get(c).getValue())){
+						aCol.put(cols.get(c).getValue(), 1);
+
+					}
+					//Append this to the newCols
+
+					for ( int k : aCol.keySet()){
+						Attribute n = new Attribute();
+						n.setValue(aCol.get(k));
+						newCols.add(n);
+						insertions++;
+					}
+				}
+			}
+			row.setFeatures(newCols);
+			this.setAttributeCount(newCols.size());
+		}
+
+
+		//Add these columns to tthe train and test set.
+		for ( int rowId  : testRows.keySet()){
+			FeatureRow row = testRows.get(rowId) ;
+			List<Attribute> cols = row.getFeatures();
+			//Create a temp map storing values for splits as categorical values
+			List<Attribute> newCols = new ArrayList<>();
+			for ( int c = 0 ; c < cols.size(); c++){
+				//Check if this col's value is = 0 or
+				if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
+					//We don't need to do anything here. The column is binary valued.
+					newCols.add(cols.get(c));
+				}
+				else{
+					TreeMap<Integer, Integer> aCol = new TreeMap<>();
+					int tempIndex = c ;
+					for ( int c1  : values.get(c)){
+						//aCol -- key - new column index.
+						//value - new column value.
+						aCol.put(c1, 0);
+					}
+					if( aCol.containsKey(cols.get(c).getValue())){
+						aCol.put(cols.get(c).getValue(), 1);
+
+					}
+					//Append this to the newCols
+
+					for ( int k : aCol.keySet()){
+						Attribute n = new Attribute();
+						n.setValue(aCol.get(k));
+						newCols.add(n);
+						insertions++;
+					}
+				}
+			}
+			row.setFeatures(newCols);
+			this.setAttributeCount(newCols.size());
+		}
+	}
 	public void PrintData(String type){
+		int c = 0 ;
+
 		if (type == "train"){
 			for( int key : trainingRows.keySet()){
 				//Fetch and print each row.

@@ -14,40 +14,58 @@ public class LogisticRegression {
     Data d  = null;
     double[] gradientVector = null;
     double[] weightVector = null;
-    double learningRate = .000001;
+    double learningRate = .5;
     public LogisticRegression(Data trainData){
         this.d = trainData;
         weightVector = new double[trainData.getAttributeCount()];
     }
     public void TrainClassifier(){
         //For each row, compute the probability
-        for ( int k = 0 ; k < 5000 ;k++){
-            gradientVector = new double[d.getAttributeCount()];
-            for (int rowId : d.getTrainingRows().keySet()){
+        double[] prevWeightVector = new double[weightVector.length];
+        int c = 0 ;
+        do {
+            System.out.println("Iteration : " + c++);
+            gradientVector = new double[weightVector.length];
+            for (int rowId : d.getTrainingRows().keySet()) {
                 FeatureRow row = d.getTrainingRows().get(rowId);
-                if ( row != null){
+                if (row != null) {
                     //Compute the z vector by multiplying the weight with the column value.
                     double z = 0.0;
                     List<Attribute> columns = row.getFeatures();
-                    for ( int j = 0 ; j < weightVector.length; j++){
+                    for (int j = 0; j < weightVector.length; j++) {
                         z = z + (weightVector[j] * columns.get(j).getValue());
                     }
                     //Compute probability for this z
                     double prob = ComputeProbability(z);
-                    double error = (row.getClassLabel().getValue()*1.0 )-  prob;
+                    double error = (row.getClassLabel().getValue() * 1.0) - prob;
                     //update the gradient vectors
-                    for ( int j = 0 ; j < gradientVector.length; j++) {
+                    for (int j = 0; j < gradientVector.length; j++) {
                         gradientVector[j] = gradientVector[j] + (error * columns.get(j).getValue() * 1.0);
                     }
                 }
+                //copy the current weight vector into the previous weight vector.
                 //update the weight vector using the learning rate .
-                for ( int i =0 ; i < weightVector.length ; i++){
-                    weightVector[i] = weightVector[i]  + (learningRate * gradientVector[i]);
+                for (int i = 0; i < weightVector.length; i++) {
+                    prevWeightVector[i] = weightVector[i];
+                    weightVector[i] = weightVector[i] + (learningRate * gradientVector[i]);
+
                 }
             }
-        }
+        } while(!CheckForConvergence(weightVector, prevWeightVector));
         this.PrintDoubleArray(weightVector);
     }
+
+    private boolean CheckForConvergence(double[] weightVector, double[] prevWeightVector) {
+        boolean result = true;
+          for ( int  i = 0  ; i < weightVector.length ; i++){
+            if ( Math.abs(prevWeightVector[i] - weightVector[i]) > learningRate ){
+                result = false ;
+                break;
+            }
+        }
+        return result;
+    }
+
     public void TestClassifier(Data testData) {
 
         for (int rowId : testData.getTestRows().keySet()) {
@@ -65,7 +83,7 @@ public class LogisticRegression {
             else{
                 row.setPredictedClassLabel("1");
             }
-            System.out.println("Expected " + row.getExpectedClassLabel() + " - Predicted : " + row.getPredictedClassLabel());
+            //System.out.println("Expected " + row.getExpectedClassLabel() + " - Predicted : " + row.getPredictedClassLabel());
         }
         System.out.println(this.ComputePredictionAccuracy());
     }
