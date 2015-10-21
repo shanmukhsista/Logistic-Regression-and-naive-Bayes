@@ -1,11 +1,9 @@
 package pa2;
 
-import com.sun.xml.internal.ws.wsdl.writer.document.StartWithExtensionsType;
 import utilities.Attribute;
 import utilities.Data;
 import utilities.FeatureRow;
 
-import java.io.PrintWriter;
 import java.util.*;
 
 /**
@@ -123,8 +121,22 @@ public class NaiveBayes {
     }
 
     public void testClassifier(Data testData) {
+        int numOfClasses = testData.getClassLabelSet().size();
+        int confusionMatrix [][] = new int[numOfClasses][numOfClasses];
+        for(int i =0; i< numOfClasses; i++){
+            for (int j =0; j< numOfClasses; j++ ){
+                confusionMatrix[i][j] = 0;
+            }
+        }
+        Map<String,Integer> labelToIndexMap = new HashMap<String,Integer>();
+        int indx = 0;
+        for(String classLabel: testData.getClassLabelSet()){
+            labelToIndexMap.put(classLabel, indx++);
+        }
         int correctlyClassified = 0;
         int incorrectlyClassified = 0;
+        double accuracy = 0.0;
+        int rowNo =1;
         for(int rowId : testData.getTestRows().keySet()){
             FeatureRow row = testData.getTestRows().get(rowId);
             List<Attribute> features = row.getFeatures();
@@ -138,16 +150,37 @@ public class NaiveBayes {
                 prob1 = prob1 * probabilities.get(key1);
                 columnId++;
             }
-            String prediction = (prob0 > prob1) ? "0" : "1";
+            double denominator = prob0+prob1;
+            double p0 = prob0/denominator;
+            double p1 = prob1/denominator;
+            System.out.println("For Row "+rowNo);
+            String prediction = (p0 > p1) ? "0" : "1";
             row.setPredictedClassLabel(prediction);
+            System.out.println("Predicted class :: "+row.getPredictedClassLabel()+"  Expected class :: "+row.getExpectedClassLabel());
+            System.out.println();
             if(row.getExpectedClassLabel().equals(row.getPredictedClassLabel())){
-               correctlyClassified++;
+                correctlyClassified++;
             }
             else{
-               incorrectlyClassified++;
+                incorrectlyClassified++;
             }
+            String expectedLabel = row.getExpectedClassLabel();
+            String predictedLabel = row.getPredictedClassLabel();
+            int actual = labelToIndexMap.get(expectedLabel);
+            if ( labelToIndexMap.containsKey(predictedLabel)){
+                int predicted = labelToIndexMap.get(predictedLabel);
+                confusionMatrix [actual][predicted] = (confusionMatrix[actual][predicted] + 1 ) ;
+            }
+            rowNo++;
         }
-        System.out.println("Correctly classified :: "+correctlyClassified);
-        System.out.println("Incorrectly classified :: "+incorrectlyClassified);
+        //accuracy = ( 100.0 * correctlyClassified )/ (1.0* (rowNo-1));
+        //System.out.println(accuracy);
+        System.out.println("Confusion Matrix ::");
+        for(int i =0; i< numOfClasses; i++){
+            for (int j =0; j< numOfClasses; j++ ){
+                System.out.print(confusionMatrix[i][j] + " ");
+            }
+            System.out.println();
+        }
     }
 }

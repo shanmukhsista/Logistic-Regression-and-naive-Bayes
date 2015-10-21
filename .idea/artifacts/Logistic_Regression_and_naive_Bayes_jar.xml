@@ -1,0 +1,14 @@
+<component name="ArtifactManager">
+  <artifact name="Logistic-Regression-and-naive-Bayes:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Logistic_Regression_and_naive_Bayes_jar</output-path>
+    <root id="root">
+      <element id="archive" name="Logistic-Regression-and-naive-Bayes.jar">
+        <element id="module-output" name="Logistic-Regression-and-naive-Bayes" />
+      </element>
+      <element id="library" level="project" name="org.apache.commons:commons-lang3:3.4" />
+      <element id="file-copy" path="$PROJECT_DIR$/app.properties" />
+      <element id="file-copy" path="$PROJECT_DIR$/zoo-test.csv" />
+      <element id="file-copy" path="$PROJECT_DIR$/zoo-train.csv" />
+    </root>
+  </artifact>
+</component>

@@ -1,9 +1,7 @@
 package utilities;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -89,6 +87,7 @@ public class Utility {
 		 try{
 			
 			 	FileReader fr = new FileReader(inputFileName);
+			 System.out.println("Reading file " +  inputFileName);
 				BufferedReader br = new BufferedReader(fr);
 				String line;
 				int rowIndex = 0 ; 
@@ -162,6 +161,46 @@ public class Utility {
 		
 		 return trainingData; 
 	 }
+	public static void WriteDataSetToFile(String outFileName, Data d) throws Exception {
+        String trainOutFileName = outFileName.replace("*", "train");
+        WriteRowsObject(d.getTrainingRows(), trainOutFileName, "train");
+        String testOutFileName = outFileName.replace("*", "test");
+        WriteRowsObject(d.getTestRows(), testOutFileName, "test");
+    }
+
+    private static void WriteRowsObject( HashMap<Integer, FeatureRow> rows, String outFileName,  String type) throws Exception{
+        int ch = 0 ;
+        PrintWriter pw=  new PrintWriter(outFileName);
+        //Write training file.
+        //We need column headers for weka.
+        for ( int rowId : rows.keySet()){
+            FeatureRow row = rows.get(rowId);
+            String[] rowValues = new String[row.getFeatures().size() +  1];
+            String[] headers = new String[row.getFeatures().size() +  1];
+            if ( ch == 0 ){
+                for ( int i = 0 ; i < row.getFeatures().size() + 1 ; i++){
+                    headers[i] ="A-" + (i+1);
+                }
+                pw.println(StringUtils.join(headers, ","));
+                ch++;
+            }
+            for ( int i = 0 ; i < row.getFeatures().size() ; i++){
+                rowValues[i] = Integer.toString(row.getFeatures().get(i).getValue());
+            }
+            //Add the class label.
+            if ( type.equals("train")){
+
+                rowValues[rowValues.length - 1 ] = Integer.toString(row.getClassLabel().getValue());
+
+            }
+            else{
+                rowValues[rowValues.length - 1 ] = row.getExpectedClassLabel();
+
+            }
+            pw.println(StringUtils.join(rowValues, ","));
+        }
+        pw.close();
+    }
 	public Data CreateBinarySplits(Data inputData){
 		return inputData;
 	}

@@ -15,13 +15,21 @@ public class LogisticRegression {
     Data d  = null;
     double[] gradientVector = null;
     double[] weightVector = null;
-    double learningRate = .13;
-    public LogisticRegression(Data trainData){
+    int[][] confusionMatrix  = new int[2][2];
+    //Default learning rate.
+    double learningRate =.13;
+    public LogisticRegression(Data trainData, double learningRate){
         this.d = trainData;
         weightVector = new double[trainData.getAttributeCount()];
+        this.learningRate = learningRate;
+        for(int i =0; i< 2; i++){
+            for (int j =0; j< 2; j++ ){
+                confusionMatrix[i][j] = 0;
+            }
+        }
     }
     public void TrainClassifier(){
-        System.out.println("\n*************Started training Logistic Regression.*****************");
+        System.out.println("\n*************Started training Logistic Regression with a learning rate of " + learningRate + ". *****************");
         //For each row, compute the probability
         double[] prevWeightVector = new double[weightVector.length];
         int c = 0 ;
@@ -84,14 +92,27 @@ public class LogisticRegression {
             }
             if ( result  < 0){
                 row.setPredictedClassLabel("0");
+                if ( row.getPredictedClassLabel().equals(row.getExpectedClassLabel())){
+                    confusionMatrix[1][1]++;
+                }
+                else{
+                    confusionMatrix[1][0]++;
+                }
             }
             else{
                 row.setPredictedClassLabel("1");
+                if ( row.getPredictedClassLabel().equals(row.getExpectedClassLabel())){
+                    confusionMatrix[0][0]++;
+                }
+                else{
+                    confusionMatrix[0][1]++;
+                }
             }
             //System.out.println("Expected " + row.getExpectedClassLabel() + " - Predicted : " + row.getPredictedClassLabel());
         }
         System.out.println("Done Testing. Classifier Accuracy - " + this.ComputePredictionAccuracy());
         System.out.println("***************************************");
+
     }
     public void PrintDoubleArray(double[] a ){
         for ( int i = 0 ; i < a.length ; i++){
@@ -117,5 +138,15 @@ public class LogisticRegression {
         }
         res = ( 100.0 * nCount )/ (1.0* dCount);
         return res;
+    }
+    public void PrintConfusionMatrix(){
+        System.out.println("Confusion Matrix for learning rate :  " + learningRate);
+        for(int i =0; i< 2; i++){
+            for (int j =0; j< 2; j++ ){
+                System.out.print(confusionMatrix[i][j] + "\t");
+            }
+            System.out.print("\n");
+        }
+        System.out.println();
     }
 }

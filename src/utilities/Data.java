@@ -105,43 +105,14 @@ public class Data {
 	public void CreateBinarySplitsForColumnsInData(){
 		//This method scans the train and test data for distinct values and builds a multi column binary split
 		HashMap<Integer , HashSet<Integer>> values = new HashMap<>();
-		//Scan training data.
-		for ( int rowId  : trainingRows.keySet()){
-			FeatureRow row = trainingRows.get(rowId) ;
-			List<Attribute> cols = row.getFeatures();
-			for ( int col = 0 ; col < cols.size(); col++){
-				if ( values.containsKey(col)){
-					HashSet<Integer> storedSet = values.get(col);
-					if ( storedSet != null){
-						storedSet.add(cols.get(col).getValue());
-					}
-					values.put(col, storedSet);
-				}
-				else{
-					HashSet<Integer> attrValues = new HashSet<>();
-					attrValues.add(cols.get(col).getValue());
-					values.put(col, attrValues);
- 				}
-			}
-		}
-		for ( int rowId  : testRows.keySet()){
-			FeatureRow row = testRows.get(rowId) ;
-			List<Attribute> cols = row.getFeatures();
-			for ( int col = 0 ; col < cols.size(); col++){
-				if ( values.containsKey(col)){
-					HashSet<Integer> storedSet = values.get(col);
-					if ( storedSet != null){
-						storedSet.add(cols.get(col).getValue());
-					}
-					values.put(col, storedSet);
-				}
-				else{
-					HashSet<Integer> attrValues = new HashSet<>();
-					attrValues.add(cols.get(col).getValue());
-					values.put(col, attrValues);
-				}
-			}
-		}
+		HashSet<Integer> col13 = new HashSet<>();
+        col13.add(0);
+        col13.add(2);
+        col13.add(4);
+        col13.add(5);
+        col13.add(6);
+        col13.add(8);
+        values.put(12,col13);
 		int insertions = 0;
 		//Add these columns to tthe train and test set.
 		for ( int rowId  : trainingRows.keySet()){
@@ -151,33 +122,39 @@ public class Data {
 			List<Attribute> newCols = new ArrayList<>();
 			for ( int c = 0 ; c < cols.size(); c++){
 				//Check if this col's value is = 0 or
-				if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
-					//We don't need to do anything here. The column is binary valued.
-					newCols.add(cols.get(c));
-				}
-				else{
-					TreeMap<Integer, Integer> aCol = new TreeMap<>();
-					int tempIndex = c ;
-					for ( int c1  : values.get(c)){
-						//aCol -- key - new column index.
-						//value - new column value.
-						aCol.put(c1, 0);
-					}
-					if( aCol.containsKey(cols.get(c).getValue())){
-						aCol.put(cols.get(c).getValue(), 1);
+				if ( values.containsKey(c)){
+                    if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
+                        //We don't need to do anything here. The column is binary valued.
+                        newCols.add(cols.get(c));
+                    }
+                    else{
+                        TreeMap<Integer, Integer> aCol = new TreeMap<>();
+                        int tempIndex = c ;
+                        for ( int c1  : values.get(c)){
+                            //aCol -- key - new column index.
+                            //value - new column value.
+                            aCol.put(c1, 0);
+                        }
+                        if( aCol.containsKey(cols.get(c).getValue())){
+                            aCol.put(cols.get(c).getValue(), 1);
 
-					}
-					//Append this to the newCols
+                        }
+                        //Append this to the newCols
 
-					for ( int k : aCol.keySet()){
-						Attribute n = new Attribute();
-						n.setValue(aCol.get(k));
-						newCols.add(n);
-						insertions++;
-					}
-				}
+                        for ( int k : aCol.keySet()){
+                            Attribute n = new Attribute();
+                            n.setValue(aCol.get(k));
+                            newCols.add(n);
+                            insertions++;
+                        }
+                    }
+                }
+                else{
+                    newCols.add(cols.get(c));
+                }
+
 			}
-			row.setFeatures(newCols);
+                row.setFeatures(newCols);
 			this.setAttributeCount(newCols.size());
 		}
 
@@ -189,32 +166,37 @@ public class Data {
 			//Create a temp map storing values for splits as categorical values
 			List<Attribute> newCols = new ArrayList<>();
 			for ( int c = 0 ; c < cols.size(); c++){
-				//Check if this col's value is = 0 or
-				if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
-					//We don't need to do anything here. The column is binary valued.
-					newCols.add(cols.get(c));
-				}
-				else{
-					TreeMap<Integer, Integer> aCol = new TreeMap<>();
-					int tempIndex = c ;
-					for ( int c1  : values.get(c)){
-						//aCol -- key - new column index.
-						//value - new column value.
-						aCol.put(c1, 0);
-					}
-					if( aCol.containsKey(cols.get(c).getValue())){
-						aCol.put(cols.get(c).getValue(), 1);
+				if ( values.containsKey(c)){
+                    //Check if this col's value is = 0 or
+                    if ( values.get(c).contains(0) && values.get(c).contains(1) && values.get(c).size() == 2){
+                        //We don't need to do anything here. The column is binary valued.
+                        newCols.add(cols.get(c));
+                    }
+                    else{
+                        TreeMap<Integer, Integer> aCol = new TreeMap<>();
+                        int tempIndex = c ;
+                        for ( int c1  : values.get(c)){
+                            //aCol -- key - new column index.
+                            //value - new column value.
+                            aCol.put(c1, 0);
+                        }
+                        if( aCol.containsKey(cols.get(c).getValue())){
+                            aCol.put(cols.get(c).getValue(), 1);
 
-					}
-					//Append this to the newCols
+                        }
+                        //Append this to the newCols
 
-					for ( int k : aCol.keySet()){
-						Attribute n = new Attribute();
-						n.setValue(aCol.get(k));
-						newCols.add(n);
-						insertions++;
-					}
-				}
+                        for ( int k : aCol.keySet()){
+                            Attribute n = new Attribute();
+                            n.setValue(aCol.get(k));
+                            newCols.add(n);
+                            insertions++;
+                        }
+                    }
+                } else{
+                    newCols.add(cols.get(c));
+                }
+
 			}
 			row.setFeatures(newCols);
 			this.setAttributeCount(newCols.size());
@@ -248,7 +230,7 @@ public class Data {
 	}
 	public void PrintConfusionMatrix(){
 		if ( trainingRows != null && testRows != null){
-			//Print confusion matrix. 
+			//Print confusion matrix.
 		}
 	}
 
